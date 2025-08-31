@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import autoTable from "jspdf-autotable"; 
 // --- SVG Icons (replaces react-icons) ---
+
+
 
 const SchoolIcon = () => (
   <svg className="h-8 w-8 text-cyan-600" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -53,7 +57,8 @@ const StudentDetailsPage = () => {
     try {
       const response = await axios.get("http://localhost:5000/api/v_1/ranking");
       const allStudents: Student[] = response.data.data;
-
+      console.log(allStudents);
+      setFetchedData(allStudents)
       const student = allStudents.find(
         (s) => s.seatNumber.toLowerCase() === seatNumberInput.toLowerCase()
       );
@@ -70,7 +75,114 @@ const StudentDetailsPage = () => {
       setLoading(false);
     }
   };
+  const [fetchData, setFetchedData] = useState({});
+  const generatePDFTeacher = () => {
+    const doc = new jsPDF();
 
+    // Title
+    doc.setFontSize(18);
+    doc.text("Student Ranking Report", 14, 15);
+
+    // Define table headers
+    const tableColumn = ["Ranking", "Student Name", "Seat Number", "Marks"];
+    const tableRows: (string | number)[][] = [];
+    const studentData:any = fetchData;
+    // Fill rows
+    studentData.forEach(student => {
+      tableRows.push([
+        student.rank,
+        student.name.replace(/_/g, " "), // replace underscores with spaces
+        student.seatNumber,
+        student.marks,
+      ]);
+    });
+
+    // Generate table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [41, 128, 185] }, // blue header
+      alternateRowStyles: { fillColor: [245, 245, 245] }, // light gray rows
+    });
+
+    // Save PDF
+    doc.save("student_ranking_report.pdf");
+  };
+  interface Student {
+  rank: number;
+  name: string;
+  seatNumber: string;
+  marks: number;
+}
+
+// Helper: generate remarks based on marks
+const getRemarks = (marks: number): string => {
+  if (marks >= 18) return "Excellent performance!";
+  if (marks >= 15) return "Very Good";
+  if (marks >= 12) return "Good, but can improve";
+  if (marks >= 8) return "Needs improvement";
+  return "Poor performance, needs serious effort";
+};
+
+// Main function
+const generateStudentPDF = (student: Student) => {
+    const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Student Report Card", 14, 20);
+
+  // Collaborators Section
+  doc.setFontSize(13);
+  doc.setFont("times", "italic");
+  doc.text("Prepared with collaboration by:", 14, 30);
+
+  // Collaborators in column format
+  const collaborators = [
+    "Ahmed Abdul Rehman",
+    "Muhammad Arham Jamil",
+    "Muhammad Ahsan",
+    "Shahdil Khizer",
+    "Muneeb Ahmed Siddiqui",
+    "Nida Hafeez",
+  ];
+
+  let y = 40;
+  collaborators.forEach((name) => {
+    doc.text(`• ${name}`, 20, y);
+    y += 9;
+  });
+
+  // Student details table
+  autoTable(doc, {
+    startY: 90,
+    head: [["Field", "Value"]],
+    body: [
+      ["Ranking", student.rank],
+      ["Student Name", student.name.replace(/_/g, " ")],
+      ["Seat Number", student.seatNumber],
+      ["Marks (out of 20)", student.marks],
+      ["Course Name", "CS-352 - Object Oriented Programming"],
+      ["Teacher Name", "Miss Humera Tariq"],
+    ],
+    styles: { fontSize: 12, cellPadding: 4 },
+    headStyles: { fillColor: [41, 128, 185] },
+  });
+
+  // Remarks
+  const finalY = (doc as any).lastAutoTable.finalY || 50;
+  doc.setFontSize(18);
+  doc.text("Remarks:", 14, finalY + 15);
+
+  doc.setFontSize(18);
+  doc.text(getRemarks(student.marks), 14, finalY + 25);
+
+  // Save PDF
+  doc.save(`${student.name}_report.pdf`);
+};
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
       <div className="relative w-full max-w-xl">
@@ -154,6 +266,12 @@ const StudentDetailsPage = () => {
                     <hr/>
                     <p className="flex justify-between"><strong>Rank:</strong> <span className="font-bold text-lg text-green-700">{foundStudent.rank}</span></p>
                   </div>
+                  <button
+        onClick={generatePDFTeacher}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Generate PDF
+      </button>
                 </div>
               )}
             </div>
