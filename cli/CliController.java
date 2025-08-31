@@ -40,8 +40,7 @@ public class CliController {
                     showStudentMenu();
                     break;
                 case "3":
-                    System.out.println("Exiting Portal. Goodbye!");
-                    scanner.close();
+                    System.out.println("Exiting Portal...");
                     return;
                 default:
                     System.out.println("Invalid choice. Please enter 1, 2, or 3.");
@@ -49,12 +48,11 @@ public class CliController {
         }
     }
 
-    // NEW: Handles the admin login process.
     private boolean handleAdminLogin() {
-        System.out.print("Enter admin password: ");
+        System.out.print("\nEnter admin password: ");
         String password = scanner.nextLine();
-        if (ADMIN_PASSWORD.equals(password)) {
-            System.out.println("Admin login successful!");
+        if (password.equals(ADMIN_PASSWORD)) {
+            System.out.println("Login successful, Admin!");
             return true;
         } else {
             System.out.println("Incorrect password. Access denied.");
@@ -62,15 +60,13 @@ public class CliController {
         }
     }
 
-    // NEW: The menu specifically for Admins.
     private void showAdminMenu() {
-        fileHandler.Read(DATA_FILE); // Load data once for the session
         while (true) {
             System.out.println("\n--- Admin Menu ---");
-            System.out.println("1. Display all student records");
-            System.out.println("2. Add a new record");
-            System.out.println("3. Find a particular student record");
-            System.out.println("4. Return to main menu");
+            System.out.println("1. Display All Records");
+            System.out.println("2. Add New Student Record");
+            System.out.println("3. Find Student by Seat Number");
+            System.out.println("4. Exit to Role Selection");
             System.out.print("Enter your choice: ");
 
             String choice = scanner.nextLine();
@@ -82,44 +78,53 @@ public class CliController {
                     handleAddRecord();
                     break;
                 case "3":
-                    handleFindRecord();
+                    handleFindStudent();
                     break;
                 case "4":
-                    return; // Exits the admin menu and goes back to role selection
+                    System.out.println("Returning to role selection menu...");
+                    return;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice. Please enter a number from 1 to 4.");
             }
         }
     }
 
-    // NEW: The menu specifically for Students.
     private void showStudentMenu() {
-        fileHandler.Read(DATA_FILE); // Load data once for the session
         while (true) {
             System.out.println("\n--- Student Menu ---");
-            System.out.println("1. Find my record");
-            System.out.println("2. Display OOPS Questions");
-            System.out.println("3. Return to main menu");
+            System.out.println("1. Display All Records");
+            System.out.println("2. Find My Record by Seat Number");
+            System.out.println("3. View Teacher's Questions");
+            System.out.println("4. Exit to Role Selection");
             System.out.print("Enter your choice: ");
 
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    handleFindRecord();
+                    handleDisplayAllRecords();
                     break;
                 case "2":
-                    handleDisplayQuestions();
+                    handleFindStudent();
                     break;
                 case "3":
-                    return; // Exits the student menu and goes back to role selection
+                    handleViewQuestions();
+                    break;
+                case "4":
+                    System.out.println("Returning to role selection menu...");
+                    return;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice. Please enter a number from 1 to 4.");
             }
         }
     }
+    
+    private void handleViewQuestions() {
+        Teacher teacher = new Teacher();
+        teacher.displayQuestion();
+    }
 
-    private void handleFindRecord() {
-        System.out.print("Enter the student's seat number: ");
+    private void handleFindStudent() {
+        System.out.print("Enter student seat number to find: ");
         String seatNumber = scanner.nextLine();
         
         // No need to re-read the file every time, it's loaded when the menu starts.
@@ -138,6 +143,8 @@ public class CliController {
     }
 
     private void handleDisplayAllRecords() {
+        fileHandler.Read(DATA_FILE);
+        fileHandler.sortStudents();
         fileHandler.display();
     }
 
@@ -146,16 +153,29 @@ public class CliController {
         System.out.print("Input: ");
         String input = scanner.nextLine();
         
-        fileHandler.Write(DATA_FILE, input);
-        
-        // After adding, re-read and display to show the updated list
-        System.out.println("Record added successfully. Here is the updated list:");
-        fileHandler.Read(DATA_FILE);
-        fileHandler.display();
-    }
-    
-    private void handleDisplayQuestions() {
-        Teacher teacher = new Teacher();
-        teacher.displayQuestion();
+        // Split the input and create a Student object
+        String[] parts = input.split("\\s+");
+        if (parts.length != 4) {
+            System.out.println("Invalid input format. Please enter data in the format 'rank name seatNumber marks'.");
+            return;
+        }
+
+        try {
+            int rank = Integer.parseInt(parts[0]);
+            String name = parts[1];
+            String seatNumber = parts[2];
+            double marks = Double.parseDouble(parts[3]);
+            Student student = new Student(rank, name, seatNumber, marks);
+            
+            fileHandler.Write(DATA_FILE, student);
+            
+            // After adding, re-read and display to show the updated list
+            System.out.println("Record added successfully. Here is the updated list:");
+            fileHandler.Read(DATA_FILE);
+            fileHandler.sortStudents();
+            fileHandler.display();
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format for rank or marks. Please try again.");
+        }
     }
 }
