@@ -11,7 +11,7 @@
       "src": "backend/src/app/index.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": "backend/src/app/student_data.txt"
+        "includeFiles": "backend/src/app/controllers/student_data.txt"
       }
     }
   ],
