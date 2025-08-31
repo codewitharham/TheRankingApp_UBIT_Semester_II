@@ -14,14 +14,9 @@ public class InputFile {
     // It is a Write Function
     public void Write(String filename, String text) {
         try {
-            /*
-             * Here I have used 'true' to ensure that new data is appended and doesn't
-             * overwrite the previous data.
-             */
             FileWriter writer = new FileWriter(filename, true);
-            writer.write(text + "\n");
+            writer.write("\n" + text); // Start new records on a new line
             writer.close();
-            System.out.println("Writing Done");
         } catch (IOException e) {
             System.out.println("Error while writing to file: " + e.getMessage());
         }
@@ -29,23 +24,18 @@ public class InputFile {
 
     // It is a Read Function
     public void Read(String filename) {
-        // Clear the previous data before reading to avoid duplicates
         students.clear();
-
         try {
             File obj = new File(filename);
             Scanner n = new Scanner(obj);
-
-            // Skip the first line (header) if it exists
             if (n.hasNextLine()) {
-                n.nextLine();
+                n.nextLine(); // Skip header
             }
-
             while (n.hasNextLine()) {
                 String line = n.nextLine();
-                // Use a regular expression to handle multiple spaces between fields
+                if (line.trim().isEmpty()) continue; // Skip empty lines
                 String[] d = line.split("\\s+");
-                if (d.length >= 4) { // Ensure there are at least 4 parts
+                if (d.length >= 4) {
                     try {
                         int rank = Integer.parseInt(d[0]);
                         String name = d[1];
@@ -63,42 +53,43 @@ public class InputFile {
         }
     }
 
-    // Method to find a student by seat number
     public Student findStudentBySeatNumber(String seatNumber) {
         for (Student student : students) {
             if (student.getSeatNumber().equalsIgnoreCase(seatNumber)) {
                 return student;
             }
         }
-        return null; // Return null if the student is not found
+        return null;
     }
 
-    // Method to get all students
     public List<Student> getAllStudents() {
         return this.students;
     }
 
-    // Displays all students
+    // MODIFIED: This method now prints a much cleaner table.
     public void display() {
          if (students.isEmpty()) {
             System.out.println("\nNo student records to display.");
             return;
         }
 
-        System.out.println("\n---------------------------------------------------------");
-        System.out.println("|               Current Student Rankings                |");
-        System.out.println("---------------------------------------------------------");
-        System.out.printf("| %-5s | %-20s | %-15s | %-6s |\n", "Rank", "Name", "Seat Number", "Marks");
-        System.out.println("---------------------------------------------------------");
+        String border = "+-------+---------------------------+------------------+---------+";
+        String header = "| Rank  | Name                      | Seat Number      | Marks   |";
+
+        System.out.println("\n" + border);
+        System.out.println("|                     Current Student Rankings                  |");
+        System.out.println(border);
+        System.out.println(header);
+        System.out.println(border);
         
         for (Student student : students) {
-            System.out.printf("| %-5d | %-20s | %-15s | %-6.2f |\n", 
+            System.out.printf("| %-5d | %-25s | %-16s | %-7.2f |\n", 
                 student.getRank(), 
                 student.getName().replace("_", " "), 
                 student.getSeatNumber(), 
                 student.getMarks());
         }
         
-        System.out.println("---------------------------------------------------------\n");
+        System.out.println(border + "\n");
     }
 }

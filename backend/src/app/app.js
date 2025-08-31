@@ -6,7 +6,7 @@ import Cors from 'cors'
 const app = express()
 
 /* CONFIGURATION */ 
-app.use(Cors({origin: process.env.CORS_ORIGIN})) // middleware so that only requests from the specified origin are accepted
+app.use(Cors()) // middleware so that only requests from the specified origin are accepted
 app.use(express.json()) // middleware so that server can only accept data in JSON format
 app.use(express.urlencoded({extended: true})) // middleware so that data from url can be read in server correctly
 app.use(express.static("public"))
