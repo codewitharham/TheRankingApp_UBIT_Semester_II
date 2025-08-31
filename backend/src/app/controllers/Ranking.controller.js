@@ -23,7 +23,7 @@ const getRanking = async (req, res) => {
     // Get the directory name of the current module
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const dataFilePath = path.join(__dirname, 'student_data.txt');
+    const dataFilePath = path.join(__dirname, '../../../../cli/data/student_data.txt');
 
     try {
         // Read the content of the Data.txt file asynchronously
