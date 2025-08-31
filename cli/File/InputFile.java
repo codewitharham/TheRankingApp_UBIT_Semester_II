@@ -15,7 +15,7 @@ public class InputFile {
     // Updated Write function to accept a Student object
     public void Write(String filename, Student student) {
         try (FileWriter writer = new FileWriter(filename, true)) {
-            // Student ke data ko ek single line string mein format karein
+            
             String data = String.format("%d %s %s %.2f", 
                 student.getRank(), 
                 student.getName().replace(" ", "_"), 
