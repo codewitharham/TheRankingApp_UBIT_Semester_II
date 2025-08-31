@@ -80,6 +80,11 @@ public class InputFile {
 
     // Displays all students
     public void display() {
+         if (students.isEmpty()) {
+            System.out.println("\nNo student records to display.");
+            return;
+        }
+
         System.out.println("\n---------------------------------------------------------");
         System.out.println("|               Current Student Rankings                |");
         System.out.println("---------------------------------------------------------");

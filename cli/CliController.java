@@ -2,12 +2,13 @@ package cli;
 
 import java.util.Scanner;
 import cli.File.InputFile;
+import cli.Teacher.Teacher; // Import the Teacher class
 import cli.Student.Student;
 
 public class CliController {
     private InputFile fileHandler;
     private Scanner scanner;
-    private static final String DATA_FILE = "D:\\TheRankingApp_UBIT_SemesterII\\cli\\data\\student_data.txt";
+    private static final String DATA_FILE = "Data.txt";
 
     public CliController() {
         this.fileHandler = new InputFile();
@@ -25,7 +26,8 @@ public class CliController {
             System.out.println("1. Find a particular student record");
             System.out.println("2. Display all student records");
             System.out.println("3. Add a new record");
-            System.out.println("4. Exit");
+            System.out.println("4. Display OOPS Questions"); // New menu option
+            System.out.println("5. Exit");
             System.out.print("Enter your choice: ");
 
             // Use a try-catch to handle non-integer input
@@ -33,7 +35,7 @@ public class CliController {
             try {
                 choice = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number from 1 to 4.");
+                System.out.println("Invalid input. Please enter a number from 1 to 5.");
                 continue;
             }
 
@@ -48,6 +50,9 @@ public class CliController {
                     handleAddRecord();
                     break;
                 case 4:
+                    handleDisplayQuestions(); // New case for the questions
+                    break;
+                case 5:
                     System.out.println("Exiting CLI. Goodbye!");
                     scanner.close();
                     return; // Exit the start method
@@ -95,5 +100,11 @@ public class CliController {
         // After adding, re-read and display to show the updated list
         fileHandler.Read(DATA_FILE);
         fileHandler.display();
+    }
+    
+    // New method to display questions
+    private void handleDisplayQuestions() {
+        Teacher teacher = new Teacher();
+        teacher.displayQuestion();
     }
 }
