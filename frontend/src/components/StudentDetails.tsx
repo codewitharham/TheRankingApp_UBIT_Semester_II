@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // --- SVG Icons (replaces react-icons) ---
@@ -33,43 +33,67 @@ interface Student {
 }
 
 const StudentDetailsPage = () => {
-  const [seatNumberInput, setSeatNumberInput] = useState('');
-  const [foundStudent, setFoundStudent] = useState<Student | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const [seatNumberInput, setSeatNumberInput] = useState<string>('');
+    const [foundStudent, setFoundStudent] = useState<Student | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [allStudents, setAllStudents] = useState<Student[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setFoundStudent(null);
+    const fetchAllStudents = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/api/v_1/ranking");
+            setAllStudents(response.data.data);
+            return response.data.data;
+        } catch (err) {
+            console.error("Failed to fetch all students:", err);
+            return [];
+        }
+    };
 
-    if (!seatNumberInput.trim()) {
-      setError("Please enter a seat number.");
-      setLoading(false);
-      return;
-    }
+    useEffect(() => {
+        // Initial fetch
+        fetchAllStudents();
 
-    try {
-      const response = await axios.get("http://localhost:5000/api/v_1/ranking");
-      const allStudents: Student[] = response.data.data;
+        // Set up polling every 10 seconds
+        const intervalId = setInterval(() => {
+            fetchAllStudents();
+        }, 1000); // 10000 ms = 10 seconds
 
-      const student = allStudents.find(
-        (s) => s.seatNumber.toLowerCase() === seatNumberInput.toLowerCase()
-      );
+        // Clean up the interval when the component unmounts
+        return () => clearInterval(intervalId);
+    }, []);
 
-      if (student) {
-        setFoundStudent(student);
-      } else {
-        setError(`No student found with seat number: ${seatNumberInput}`);
-      }
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError("Failed to connect to the server. Please ensure the backend is running.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setFoundStudent(null);
+
+        if (!seatNumberInput.trim()) {
+            setError("Please enter a seat number.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            // Fetch the latest data before searching to ensure it's up to date
+            const students = await fetchAllStudents();
+
+            const student = students.find(
+                (s: Student) => s.seatNumber.toLowerCase() === seatNumberInput.trim().toLowerCase()
+            );
+
+            if (student) {
+                setFoundStudent(student);
+            } else {
+                setError(`Student with seat number '${seatNumberInput}' not found.`);
+            }
+        } catch (err) {
+            setError("Failed to retrieve data. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">

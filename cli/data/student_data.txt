@@ -23,4 +23,3 @@ Ranking	Student Name	Seat number	Marks
 18	Muhammad_Ahmed_Cheema	B24110006079	0
 
 
-19 John_Doe B12345678910 0.0
