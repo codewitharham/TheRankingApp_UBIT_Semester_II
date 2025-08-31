@@ -2,13 +2,17 @@
 
 A full-stack application using JAVA OOPs Principles for managing and displaying student rankings. The project consists of a RESTful API built with Node.js and Express, a modern React frontend for searching student records, and a complementary Java-based Command Line Interface (CLI) for adding and viewing student data.
 
-# This project was collaboratively developed by:
-# - Muhammad Arham Jamil ( B24110006086 ) (https://github.com/codewitharham)
-# - Ahmed Abdul Rehman ( B24110006014 ) (https://github.com/CodingatAhmed)
-# - Nida Hafeez ( B24110006115 ) (https://github.com/nida179)
-# - Shahdil Khizer ( B24110006102 ) (https://github.com/shahdilkhizer)
-# - Muhammad Ahsan ( B24110006082 ) (https://github.com/muneeb-ahmed-siddiqui)
-# - Muneeb Ahmed Siddiqui ( B24110006111 ) (https://github.com/Ahsan-05)
+## 👨‍💻 Contributors
+
+This project was collaboratively developed by:
+
+- **[Muhammad Arham Jamil](https://github.com/codewitharham)** (B24110006086)
+- **[Ahmed Abdul Rehman](https://github.com/CodingatAhmed)** (B24110006014)
+- **[Nida Hafeez](https://github.com/nida179)** (B24110006115)
+- **[Shahdil Khizer](https://github.com/shahdilkhizer)** (B24110006102)
+- **[Muhammad Ahsan](https://github.com/Ahsan-05)** (B24110006082)
+- **[Muneeb Ahmed Siddiqui](https://github.com/muneeb-ahmed-siddiqui)** (B24110006111)
+
 -----
 
 ## ✨ Features
