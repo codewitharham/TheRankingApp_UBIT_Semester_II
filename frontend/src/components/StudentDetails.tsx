@@ -314,7 +314,7 @@ const doc = new jsPDF();
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     placeholder="Enter admin password"
-                    className="w-full border px-3 py-2 rounded mb-3"
+                    className="text-black w-full border px-3 py-2 rounded mb-3"
                   />
                   {passwordError && <p className="text-red-500 text-sm mb-2">{passwordError}</p>}
                   <div className="flex justify-end space-x-3">

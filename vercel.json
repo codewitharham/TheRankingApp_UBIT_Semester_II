@@ -1,0 +1,29 @@
+{
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    },
+    {
+      "src": "backend/src/app/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "backend/src/app/student_data.txt"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/src/app/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
+  "installCommand": "npm install --prefix backend/src/app && npm install --prefix frontend"
+}
