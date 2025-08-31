@@ -8,7 +8,7 @@ import { asyncHandler } from '../utils/AsyncHandler.js';
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dataFilePath = path.join(__dirname, '../../../../cli/data/student_data.txt');
+const dataFilePath = path.join(__dirname, 'student_data.txt');
 
 // A helper function to decode and parse a single line of student data
 const parseStudentData = (encodedLine) => {
