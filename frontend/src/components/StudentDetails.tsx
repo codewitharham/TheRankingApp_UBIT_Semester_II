@@ -29,12 +29,7 @@ const SearchIcon = () => (
 
 
 // --- Type Definition for a Student ---
-interface Student {
-  rank: number;
-  name: string;
-  seatNumber: string;
-  marks: number;
-}
+
 
 const StudentDetailsPage = () => {
   const [seatNumberInput, setSeatNumberInput] = useState('');
@@ -65,6 +60,7 @@ const StudentDetailsPage = () => {
 
       if (student) {
         setFoundStudent(student);
+        generateStudentPDF(student);
       } else {
         setError(`No student found with seat number: ${seatNumberInput}`);
       }
