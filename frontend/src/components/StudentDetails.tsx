@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import autoTable from "jspdf-autotable"; 
 // --- SVG Icons (replaces react-icons) ---
+
+
 
 const SchoolIcon = () => (
   <svg className="h-8 w-8 text-cyan-600" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -33,68 +37,152 @@ interface Student {
 }
 
 const StudentDetailsPage = () => {
-    const [seatNumberInput, setSeatNumberInput] = useState<string>('');
-    const [foundStudent, setFoundStudent] = useState<Student | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [allStudents, setAllStudents] = useState<Student[]>([]);
+  const [seatNumberInput, setSeatNumberInput] = useState('');
+  const [foundStudent, setFoundStudent] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    const fetchAllStudents = async () => {
-        try {
-            const response = await axios.get("http://localhost:5000/api/v_1/ranking");
-            setAllStudents(response.data.data);
-            return response.data.data;
-        } catch (err) {
-            console.error("Failed to fetch all students:", err);
-            return [];
-        }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setFoundStudent(null);
 
-    useEffect(() => {
-        // Initial fetch
-        fetchAllStudents();
+    if (!seatNumberInput.trim()) {
+      setError("Please enter a seat number.");
+      setLoading(false);
+      return;
+    }
 
-        // Set up polling every 10 seconds
-        const intervalId = setInterval(() => {
-            fetchAllStudents();
-        }, 1000); // 10000 ms = 10 seconds
+    try {
+      const response = await axios.get("http://localhost:5000/api/v_1/ranking");
+      const allStudents: Student[] = response.data.data;
+      console.log(allStudents);
+      setFetchedData(allStudents)
+      const student = allStudents.find(
+        (s) => s.seatNumber.toLowerCase() === seatNumberInput.toLowerCase()
+      );
 
-        // Clean up the interval when the component unmounts
-        return () => clearInterval(intervalId);
-    }, []);
+      if (student) {
+        setFoundStudent(student);
+      } else {
+        setError(`No student found with seat number: ${seatNumberInput}`);
+      }
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError("Failed to connect to the server. Please ensure the backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const [fetchData, setFetchedData] = useState({});
+  const generatePDFTeacher = () => {
+    const doc = new jsPDF();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        setFoundStudent(null);
+    // Title
+    doc.setFontSize(18);
+    doc.text("Student Ranking Report", 14, 15);
 
-        if (!seatNumberInput.trim()) {
-            setError("Please enter a seat number.");
-            setLoading(false);
-            return;
-        }
+    // Define table headers
+    const tableColumn = ["Ranking", "Student Name", "Seat Number", "Marks"];
+    const tableRows: (string | number)[][] = [];
+    const studentData:any = fetchData;
+    // Fill rows
+    studentData.forEach((student: { rank: string | number; name: string; seatNumber: string | number; marks: string | number; }) => {
+      tableRows.push([
+        student.rank,
+        student.name.replace(/_/g, " "), // replace underscores with spaces
+        student.seatNumber,
+        student.marks,
+      ]);
+    });
 
-        try {
-            // Fetch the latest data before searching to ensure it's up to date
-            const students = await fetchAllStudents();
+    // Generate table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [41, 128, 185] }, // blue header
+      alternateRowStyles: { fillColor: [245, 245, 245] }, // light gray rows
+    });
 
-            const student = students.find(
-                (s: Student) => s.seatNumber.toLowerCase() === seatNumberInput.trim().toLowerCase()
-            );
+    // Save PDF
+    doc.save("student_ranking_report.pdf");
+  };
+  interface Student {
+  rank: number;
+  name: string;
+  seatNumber: string;
+  marks: number;
+}
 
-            if (student) {
-                setFoundStudent(student);
-            } else {
-                setError(`Student with seat number '${seatNumberInput}' not found.`);
-            }
-        } catch (err) {
-            setError("Failed to retrieve data. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
+// Helper: generate remarks based on marks
+const getRemarks = (marks: number): string => {
+  if (marks >= 18) return "Excellent performance!";
+  if (marks >= 15) return "Very Good";
+  if (marks >= 12) return "Good, but can improve";
+  if (marks >= 8) return "Needs improvement";
+  return "Poor performance, needs serious effort";
+};
 
+// Main function
+const generateStudentPDF = (student: Student) => {
+    const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Student Report Card", 14, 20);
+
+  // Collaborators Section
+  doc.setFontSize(13);
+  doc.setFont("times", "italic");
+  doc.text("Prepared with collaboration by:", 14, 30);
+
+  // Collaborators in column format
+  const collaborators = [
+    "Ahmed Abdul Rehman",
+    "Muhammad Arham Jamil",
+    "Muhammad Ahsan",
+    "Shahdil Khizer",
+    "Muneeb Ahmed Siddiqui",
+    "Nida Hafeez",
+  ];
+
+  let y = 40;
+  collaborators.forEach((name) => {
+    doc.text(`• ${name}`, 20, y);
+    y += 9;
+  });
+
+  // Student details table
+  autoTable(doc, {
+    startY: 90,
+    head: [["Field", "Value"]],
+    body: [
+      ["Ranking", student.rank],
+      ["Student Name", student.name.replace(/_/g, " ")],
+      ["Seat Number", student.seatNumber],
+      ["Marks (out of 20)", student.marks],
+      ["Course Name", "CS-352 - Object Oriented Programming"],
+      ["Teacher Name", "Miss Humera Tariq"],
+    ],
+    styles: { fontSize: 12, cellPadding: 4 },
+    headStyles: { fillColor: [41, 128, 185] },
+  });
+
+  // Remarks
+  const finalY = (doc as any).lastAutoTable.finalY || 50;
+  doc.setFontSize(18);
+  doc.text("Remarks:", 14, finalY + 15);
+
+  doc.setFontSize(18);
+  doc.text(getRemarks(student.marks), 14, finalY + 25);
+
+  // Save PDF
+  doc.save(`${student.name}_report.pdf`);
+};
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
       <div className="relative w-full max-w-xl">
@@ -178,6 +266,12 @@ const StudentDetailsPage = () => {
                     <hr/>
                     <p className="flex justify-between"><strong>Rank:</strong> <span className="font-bold text-lg text-green-700">{foundStudent.rank}</span></p>
                   </div>
+                  <button
+        onClick={generatePDFTeacher}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Generate PDF
+      </button>
                 </div>
               )}
             </div>
@@ -189,4 +283,3 @@ const StudentDetailsPage = () => {
 };
 
 export default StudentDetailsPage;
-
