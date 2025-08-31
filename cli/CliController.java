@@ -9,7 +9,7 @@ public class CliController {
     private InputFile fileHandler;
     private Scanner scanner;
     // MODIFIED: Use the correct filename provided.
-    private static final String DATA_FILE = "student_data.txt";
+    private static final String DATA_FILE = "cli\\data\\student_data.txt";
     // NEW: A simple, hardcoded password for the admin.
     private static final String ADMIN_PASSWORD = "admin123";
 
