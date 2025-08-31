@@ -1,0 +1,25 @@
+Ranking	Student Name	Seat number	Marks
+1	Muhammad_Arham_Jamil	B24110006086	21
+1	Muhammad_Shahdil_Khizer	B24110006102	21
+2	Ahmed_Abdul_Rehman	B24110006014	19.5
+2	Nida_Hafeez	B24110006115	19.5
+3	Muneeb_Ahmed_Siddiqui	B24110006111	18.8
+4	Imam_Hussain	B24110006054	16
+5	Mubasshir_Ali_Ghori	B24110006094	15.5
+5	Sadia_Naeem	B24110006125	15.5
+6	Muhammad_Yahya	B24110006107	14.5
+7	Muhammad_Ahsan	B24110006082	13.25
+8	Muhammad_Ali	B24110006070	12.5
+9	Malakot_Siddiqua	B24110006059	11
+9	Syed_Awaiz_Ali_Shah	B24110006135	11
+10	Danish_Siddiqui	B24110006038	10.75
+11	Muhammad_Abdullah_Iqbal	B24110006014	10.5
+12	Syed_Aun_Shamsi	B24110006134	8.5
+13	Muhammad_Hasaan	B24110006090	8
+14	Aazmeer_Sarfaraz_Faridy	B24110006002	7.75
+15	Samra_Syed	B24110006126	7.7
+16	Muhammad_Waqas_Ijaz	B24110006106	5
+17	Meerak	B24110006067	4
+18	Muhammad_Ahmed_Cheema	B24110006079	0
+
+
