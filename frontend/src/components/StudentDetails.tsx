@@ -48,7 +48,7 @@ const StudentDetailsPage = () => {
   // --- Fetch all students ---
   const fetchAllStudents = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/v_1/ranking");
+      const response = await axios.get("/api/v_1/ranking");
       setAllStudents(response.data.data);
       return response.data.data;
     } catch (err) {

@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     outDir: "build"
+  },
+  server: {
+    proxy: {
+      "/api": "http://localhost:5000" // proxy API requests to your backend
+    }
   }
 })
