@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type FC, type FormEvent } from "react";
+import { useEffect, useState, type FC, type FormEvent } from "react";
 // The following libraries are now loaded via script tags to resolve compilation errors
 import jsPDF from "jspdf";
 import axios from "axios";
